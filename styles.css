@@ -1,0 +1,106 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
+    color: #1c1e21;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+.container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 400px;
+    text-align: right;
+}
+.container h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #1c1e21;
+    text-align: center;
+}
+.form-group {
+    margin-bottom: 15px;
+    position: relative;
+}
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #dddfe2;
+    border-radius: 6px;
+    font-size: 16px;
+    text-align: right;
+    direction: rtl;
+    padding-right: 40px; /* Make space for the toggle button */
+    box-sizing: border-box;
+}
+.form-group input:focus {
+    border-color: #1877f2;
+    outline: none;
+}
+.btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #1877f2;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+}
+.btn:hover {
+    background-color: #166fe5;
+}
+.error-message {
+    color: #e41e3f;
+    font-size: 14px;
+    margin-top: 10px;
+}
+.note {
+    font-size: 14px;
+    color: #606770;
+    margin-top: 20px;
+}
+.logo {
+    display: block;
+    margin: 0 auto 20px;
+    width: 100px;
+}
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #1877f2;
+    display: none;
+}
+input.error {
+    border: 2px solid red;
+}
+span.error {
+    color: red;
+    font-size: 0.9em;
+}
+.password-requirements {
+    font-size: 14px;
+    color: #606770;
+    margin-bottom: 20px;
+    text-align: center;
+}
+.placeholder {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    pointer-events: none;
+    transition: all 0.3s ease;
+    color: #999;
+    font-size: 16px;
+    background-color: #fff;
+    padding: 0 5px;
+}
